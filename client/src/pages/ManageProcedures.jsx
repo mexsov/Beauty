@@ -31,14 +31,14 @@ padding: 1rem;
   width: calc(33.33% - 1rem);
 `;
 
-const ProceduresInfo = styled.div`
+const ProcedureInfo = styled.div`
   display: flex;
   flex-direction: column;
   border-bottom: 1px solid #eee;
   margin-bottom: 1.5rem;
 `;
 
-const ProceduresName = styled.div`
+const ProcedureName = styled.div`
   font-weight: 500;
   font-size: 1rem;
   word-break: break-word;
@@ -52,7 +52,7 @@ const UserName = styled.div`
   padding: 1rem 0rem;
 `;
 
-const procedureDate = styled.div`
+const ProcedureDate = styled.div`
   font-weight: 500;
   font-size: 1rem;
   word-break: break-word;
@@ -81,7 +81,7 @@ const ConfirmButton = styled.button`
   }
 `;
 
-const Manageprocedures = () => {
+const ManageProcedures = () => {
   const { user } = useContext(AuthContext);
   const [procedures, setprocedures] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -124,25 +124,25 @@ const Manageprocedures = () => {
   return (
     <PageContainer>
       <Title>Manage procedures</Title>
-      <proceduresContainer>
+      <ProceduresContainer>
         {procedures.map((procedure) => (
-          <procedureItem key={procedure.registration_id}>
-            <procedureInfo>
-              <procedureName>{procedure.procedure_title}</procedureName>
+          <ProcedureItem key={procedure.registration_id}>
+            <ProcedureInfo>
+              <ProcedureName>{procedure.procedure_title}</ProcedureName>
               <UserName>User: {procedure.name}</UserName>
-              <procedureDate>{format(new Date(procedure.date_time), 'yyyy.MM.dd HH:mm') + ' val.'}</procedureDate>
-            </procedureInfo>
+              <ProcedureDate>{format(new Date(procedure.date_time), 'yyyy.MM.dd HH:mm') + ' val.'}</ProcedureDate>
+            </ProcedureInfo>
             <ConfirmButton 
               onClick={() => confirmRegistration(procedure.registration_id)} 
               disabled={procedure.confirmation}
             >
               {procedure.confirmation ? 'Confirmed' : 'Confirm'}
             </ConfirmButton>
-          </procedureItem>
+          </ProcedureItem>
         ))}
-      </proceduresContainer>
+      </ProceduresContainer>
     </PageContainer>
   );
 };
 
-export default Manageprocedures;
+export default ManageProcedures;

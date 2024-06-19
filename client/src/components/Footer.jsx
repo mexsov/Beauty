@@ -12,7 +12,7 @@ padding-bottom: 1rem;
 function Footer() {
   return (
     <FooterContainer>
-      Copywrite © 2024 vilniustour
+      Copywrite © 2024 beauty
     </FooterContainer>
   );
 }

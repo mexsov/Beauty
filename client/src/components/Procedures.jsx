@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { ProcedureCard } from './ProcedureCard';
-import {styled} from 'styled-components';
+import styled from 'styled-components';
 import axios from 'axios';
 import { AuthContext } from '../utils/AuthContext';
 import SyncLoader from "react-spinners/SyncLoader";
@@ -8,8 +8,6 @@ import { DeleteModal } from "./DeleteModal";
 import Search from "./Search";
 import CreateButton from "./CreateButton";
 import { useNavigate } from "react-router-dom";
-
-
 
 const ProceduresPageContainer = styled.div`
   padding: 4rem 0rem;
@@ -46,13 +44,14 @@ const Info = styled.p`
   padding: 2rem 2rem 2rem 0;
 `;
 
-export const Procedure = () => {
+export const Procedures = () => {
   const [procedures, setProcedures] = useState([]);
-  const [filteredProcedures, setfilteredprocedures] = useState([]);
+  const [filteredProcedures, setFilteredProcedures] = useState([]);
   const [proceduresLoading, setProcedureLoading] = useState(true);
   const { user } = useContext(AuthContext);
   const [deleteModalItemId, setDeleteModalItemId] = useState(null);
-  const [procedureschedule, setProcedureSchedule] = useState({});
+  const [procedureSchedule, setProcedureSchedule] = useState({});
+  const [error, setError] = useState(null);
   const navigate = useNavigate();
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -61,20 +60,12 @@ export const Procedure = () => {
       try {
         const response = await axios.get('http://localhost:3001/api/beauty/Procedures');
         setProcedures(response.data);
-        setfilteredprocedures(response.data);
-        setProcedureLoading(false);
-        
-        // Užklausiame ir isetinam kiekvienos ekskursijos schedule
-        const schedules = await Promise.all(
-          response.data.map(procedure => fetchProcedureSchedule(procedure.id))
-        );
-        const scheduleMap = {};
-        response.data.forEach((procedure, index) => {
-          scheduleMap[procedure.id] = schedules[index];
-        });
-        setProcedureSchedule(scheduleMap);
+        setFilteredProcedures(response.data);
+        await fetchAllProcedureSchedules(response.data);
       } catch (error) {
         console.error('Error fetching procedures:', error);
+        setError('Failed to load procedures.');
+      } finally {
         setProcedureLoading(false);
       }
     };
@@ -82,34 +73,23 @@ export const Procedure = () => {
     fetchProcedures();
   }, []);
 
-
   useEffect(() => {
-    // Ekskursijų filtravimo pagal pavadinimą ir datą funkcija
-    const filterProcedures = () => {
-      if (searchQuery.trim() === "") {
-        setfilteredprocedures(procedures);
-      } else {
-        const filtered = procedures.filter(procedure => {
-          // Tikriname, ar kelionės pavadinimas ir data atitinka paieškos užklausą
-          return (
-            (procedure.title && procedure.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
-            (procedure.date_time && procedure.date_time.includes(searchQuery)) ||
-            (procedure.schedule && procedure.schedule.some(scheduleItem => {
-              return scheduleItem && scheduleItem.toString().toLowerCase().includes(searchQuery.toLowerCase());
-            }))
-          );
-        });
-        setfilteredprocedures(filtered);
-      }
-    };
-
     filterProcedures();
   }, [searchQuery, procedures, procedureSchedule]);
 
-
-
-
-
+  const fetchAllProcedureSchedules = async (procedures) => {
+    const scheduleMap = {};
+    try {
+      const schedules = await Promise.all(procedures.map(procedure => fetchProcedureSchedule(procedure.id)));
+      procedures.forEach((procedure, index) => {
+        scheduleMap[procedure.id] = schedules[index];
+      });
+      setProcedureSchedule(scheduleMap);
+    } catch (error) {
+      console.error('Error fetching procedure schedules:', error);
+      setError('Failed to load procedure schedules.');
+    }
+  };
 
   const fetchProcedureSchedule = async (procedureId) => {
     try {
@@ -126,8 +106,27 @@ export const Procedure = () => {
       await axios.delete(`http://localhost:3001/api/beauty/Procedures/${procedureId}`);
       const updatedProcedures = procedures.filter(procedure => procedure.id !== procedureId);
       setProcedures(updatedProcedures);
+      setFilteredProcedures(updatedProcedures);
     } catch (error) {
       console.error('Error deleting procedure:', error);
+      setError('Failed to delete procedure.');
+    }
+  };
+
+  const filterProcedures = () => {
+    if (searchQuery.trim() === "") {
+      setFilteredProcedures(procedures);
+    } else {
+      const filtered = procedures.filter(procedure => {
+        return (
+          (procedure.title && procedure.title.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          (procedure.date_time && procedure.date_time.includes(searchQuery)) ||
+          (procedureSchedule[procedure.id] && procedureSchedule[procedure.id].some(scheduleItem => {
+            return scheduleItem && scheduleItem.toString().toLowerCase().includes(searchQuery.toLowerCase());
+          }))
+        );
+      });
+      setFilteredProcedures(filtered);
     }
   };
 
@@ -147,19 +146,19 @@ export const Procedure = () => {
           {proceduresLoading ? (
             <LoadingContainer>
               <SyncLoader color={"#dddddd"} loading={proceduresLoading} size={20} />
-           </LoadingContainer>
+            </LoadingContainer>
           ) : (
             filteredProcedures.length === 0 ? (
               <Info>No procedures available</Info>
             ) : (
               filteredProcedures.map((procedure) => (
                 <ProcedureCard
-                  key={procedure.id ? `procedure-${procedure.id}` : null}
+                  key={procedure.id}
                   {...procedure}
                   isVisible={user && user.role === "admin"}
                   onDeleteModalOpen={() => setDeleteModalItemId(procedure.id)}
                   hasReview={procedure.hasReview}
-                  schedule={procedureschedule[procedure.id] || []} // Perduodame ekskursijos tvarkarasti
+                  schedule={procedureSchedule[procedure.id] || []}
                 />
               ))
             )
@@ -175,6 +174,7 @@ export const Procedure = () => {
             }}
           />
         )}
+        {error && <Info>{error}</Info>}
       </ProceduresPageContainer>
     </>
   );

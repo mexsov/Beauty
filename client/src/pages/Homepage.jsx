@@ -30,7 +30,7 @@ function Homepage() {
 The reality is that most beauty salons do just that but there are many other services such as styling, facials, spa, skin care, hair care, nail services and facial treatments that you can take advantage of offered by professional beauty professionals at different beauty salons whose job is to improve how you look and feel about yourself.
 Below are the more popular services and beauty treatments that you can find at a beauty salon.
       </Text>
-      <procedures />
+      <Procedures />
     </HomePageContainer>
   );
 }

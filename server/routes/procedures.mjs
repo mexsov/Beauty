@@ -38,7 +38,7 @@ router.post("/:id/addreview", proceduresController.createReview);
 // vidurkio gavimas
 router.get(
   "/:id/average-rating",
-  ProceduresController.getAverageRatingForProcedures
+  proceduresController.getAverageRatingForProcedure
 );
 
 // ekskursijos schedule gavimas

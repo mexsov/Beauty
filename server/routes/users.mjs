@@ -43,17 +43,17 @@ router.post(
   usersController.login
 );
 
-// userio ekskursiju gavimas
+
 router.get("/my-procedures/:userId", usersController.getUserProcedures);
 
 router.get(
   "/:id", 
   isUser, 
   validate([param("id").isInt().withMessage("ID must be an integer")]), 
-  usersController.getProcedureDetails
+  usersController.getprocedureDetails
 );
 
-// userio ekskursiju atsaukimas
+
 router.delete("/:registrationId", usersController.cancelRegistration);
 
 

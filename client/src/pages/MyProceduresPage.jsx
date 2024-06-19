@@ -119,24 +119,24 @@ const MyproceduresPage = () => {
   return (
     <PageContainer>
       <Title>My procedures</Title>
-      <proceduresContainer>
+      <ProceduresContainer>
         {procedures.length === 0 ? (
           <p>No registered procedures found.</p>
         ) : (
           procedures.map((procedure) => {
             const formatted_date_time = format(new Date(procedure.date_time), 'yyyy.MM.dd HH:mm') + ' val.';
             return (
-              <procedureItem key={procedure.registration_id}>
-                <procedureName>{procedure.procedure_title}</procedureName>
-                <procedureDate>{formatted_date_time}</procedureDate>
+              <ProcedureItem key={procedure.registration_id}>
+                <ProcedureName>{procedure.procedure_title}</ProcedureName>
+                <ProcedureDate>{formatted_date_time}</ProcedureDate>
                 <Status isConfirmed={procedure.confirmation}>{procedure.confirmation ? "Confirmed" : "Not confirmed"}</Status>
                 <Button onClick={() => cancelRegistration(procedure.registration_id)}>Cancel registration</Button>
                 <Button onClick={() => changeRegistrationDate(procedure.registration_id)}>Change date</Button>
-              </procedureItem>
+              </ProcedureItem>
             );
           })
         )}
-      </proceduresContainer>
+      </ProceduresContainer>
     </PageContainer>
   );
 };

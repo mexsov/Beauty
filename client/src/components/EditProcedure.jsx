@@ -251,7 +251,7 @@ const EditProcedure = () => {
     setLoading(true);
   
     try {
-      await axios.patch(`http://localhost:3001/api/vilniustour/procedureS/${id}`, {
+      await axios.patch(`http://localhost:3001/api/beauty/procedureS/${id}`, {
         title: formData.title,
         image: formData.image,
         type: formData.type,
@@ -259,7 +259,7 @@ const EditProcedure = () => {
         price: formData.price,
       });
   
-      await axios.patch(`http://localhost:3001/api/vilniustour/procedureS/${id}/schedule`, {
+      await axios.patch(`http://localhost:3001/api/beauty/procedureS/${id}/schedule`, {
         date_times: formData.date_times,
       });
   

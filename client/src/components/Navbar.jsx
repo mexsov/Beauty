@@ -1,6 +1,6 @@
 import {styled} from 'styled-components';
 import { useNavigate, Link } from 'react-router-dom';
-import logo from '../assets/vilnius.jpg';
+import logo from '../assets/hair.jpg';
 import account_icon from '../assets/account_icon.svg';
 import { useContext, useState } from 'react';
 import { AuthContext } from '../utils/AuthContext';
@@ -139,7 +139,7 @@ function Navbar() {
         <LogoContainer>
           <Link to="/">
             <Logo src={logo} alt="Logo" />
-            <Title>Vilniaus Turai</Title>
+            <Title>Beauty</Title>
           </Link>
         </LogoContainer>
         <IconsContainer>
